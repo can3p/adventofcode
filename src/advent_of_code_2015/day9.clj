@@ -66,14 +66,18 @@ Tristram to Arbre = 90")
   (let [sr-state (reverse (sort-by :dist state))]
     [(first sr-state) (rest sr-state)]))
 
+(defn find-non-finished [state]
+  (let [sr-state (reverse (sort-by #(count (:left %)) state))]
+    [(first sr-state) (rest sr-state)]))
+
 
 (defn victory? [st] (= 0
                        (count (:left st))))
 
-(defn solve [input cmp]
+(defn solve [input]
   (let [[connections points] (parse-connections input)]
     (loop [states (expand-points points)]
-      (let [[min-state r-states] (cmp states)]
+      (let [[min-state r-states] (find-min states)]
         (if (victory? min-state)
           (:dist min-state)
           (recur (concat r-states
@@ -83,5 +87,21 @@ Tristram to Arbre = 90")
                                         connections)))
           )))))
 
-(def ans1 (solve input find-min))
-(def ans2 (solve input find-max))
+(defn solve-max [input]
+  (let [[connections points] (parse-connections input)]
+    (loop [states (expand-points points)]
+      (let [[min-state r-states] (find-non-finished states)]
+        (if (victory? min-state)
+          (:dist (first (find-max states)))
+          (recur (concat r-states
+                         (expand-points (:left min-state)
+                                        (:current min-state)
+                                        (:dist min-state)
+                                        connections)))
+          )))))
+
+(def ans1 (solve input))
+
+
+;; this is sloooow
+(def ans2 (solve-max input))
