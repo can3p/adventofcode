@@ -16,6 +16,7 @@
                    (map #(take time %)
                         (map process-str (str/split input #"\n"))))))
 
+;; map/reduce/apply hell
 (defn calc-fastest-new [input time]
   (apply max
          (reduce (fn [nums1 nums2]
