@@ -4,7 +4,8 @@
             ))
 
 
-(def input (quot 33100000 10))
+(def input 33100000)
+(def input-trimmed (quot 33100000 10))
 
 (defn factors [n]
   (into (sorted-set)
@@ -18,6 +19,13 @@
        (first)
        ))
 
-(def ans1 (get-ans input))
+(defn get-ans-2 [input]
+  (->> (range)
+       (filter (fn [num] (<= input (* 11 (apply + (filter #(>= 50 (quot num %)) (factors num)))))))
+       (first)
+       ))
+
+(def ans1 (get-ans input-trimmed))
+(def ans2 (get-ans-2 input))
 
 

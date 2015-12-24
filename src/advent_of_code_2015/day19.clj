@@ -9,6 +9,8 @@
                    (#(str/split % #"\n"))
                    (map #(str/split % #" => "))
                ))
+
+(def r-formulas (map (comp vec reverse) formulas))
 (def e-s (set (map second (re-seq #"e => (\w+)" (first input)))))
 (def test-str (second input))
 
@@ -36,16 +38,40 @@
 (defn make-step [strings formulas]
   (apply set/union (map #(get-replacements % formulas) strings)))
 
-(defn calc-steps [e-s formulas test-str]
-  (loop [strings e-s
-         counter 1]
-    (println counter)
-    (let [expanded (make-step strings formulas)]
-      (if (contains? expanded test-str)
-        counter
-        (recur expanded (inc counter))))))
+(defn find-matches [test-str r-formulas]
+  (sort-by (comp count first) > (filter #(<= 0 (.indexOf test-str (first %))) r-formulas)))
+
+(defn calc-matches [matches r-formulas target-str cut-off counter]
+  (loop [m matches
+         cur-cut-off cut-off
+         found-steps -1]
+    (if (= 0 (count m)) found-steps
+        (let [found (calc-steps r-formulas
+                                (first m)
+                                target-str
+                                cur-cut-off
+                                (inc counter)
+                                )]
+          (if (not= -1 found) found
+              (recur (rest m)
+                     (if (= -1 found) cur-cut-off found)
+                     (if (= -1 found) found-steps found)
+                     )))
+
+        )))
+
+(defn calc-steps [r-formulas test-str target-str cut-off counter]
+  (cond
+    (= cut-off counter) -1
+    (> (count target-str) (count test-str)) -1
+    (= target-str test-str) counter
+    :else (let [matches (->> test-str
+                             (#(find-matches % r-formulas))
+                             (map (fn[[a b]] (str/replace-first test-str a b))))
+                             ]
+            (calc-matches matches r-formulas target-str cut-off counter)
+            )))
 
 
 (def ans1 (count (get-replacements test-str formulas)))
-;; (def ans2 (calc-steps e-s formulas test-str))
-
+(def ans2 (calc-steps r-formulas test-str "e" 400 0))
