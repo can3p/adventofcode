@@ -38,7 +38,10 @@ fn day05_1_input() {
 fn day05_2_test_reduction() {
     const INPUT: &str = include_str!("../input/05_test.txt");
 
-    assert_eq!(eliminate(read_contents(INPUT).to_string(), 'a'), "dbcCCBcCcD");
+    assert_eq!(
+        eliminate(read_contents(INPUT).to_string(), 'a'),
+        "dbcCCBcCcD"
+    );
 }
 
 #[test]
@@ -63,7 +66,7 @@ fn day05_2(input: &str) -> i32 {
     let mut min: i32 = 1_000_000_00;
     let v = "abcdefghhijklmnopqrstuvwzyz";
     let inp = read_contents(input.into()).to_string();
-    for c in  v.chars() {
+    for c in v.chars() {
         let len = reduce_input(eliminate(inp.clone(), c)).len() as i32;
         if len < min {
             min = len;
@@ -74,9 +77,7 @@ fn day05_2(input: &str) -> i32 {
 }
 
 fn eliminate(s: String, c: char) -> String {
-    return s.chars()
-            .filter(|x| !x.eq_ignore_ascii_case(&c))
-            .collect();
+    return s.chars().filter(|x| !x.eq_ignore_ascii_case(&c)).collect();
 }
 
 fn reduce_input(s: String) -> String {
@@ -111,11 +112,12 @@ fn reduce_input(s: String) -> String {
 }
 
 fn opposite_chars(a: char, b: char) -> bool {
-    if (a.is_ascii_lowercase() && !b.is_ascii_lowercase() ||
-        b.is_ascii_lowercase() && !a.is_ascii_lowercase()) &&
-        (a.to_ascii_lowercase() == b.to_ascii_lowercase()) {
-            return true;
-        }
+    if (a.is_ascii_lowercase() && !b.is_ascii_lowercase()
+        || b.is_ascii_lowercase() && !a.is_ascii_lowercase())
+        && (a.to_ascii_lowercase() == b.to_ascii_lowercase())
+    {
+        return true;
+    }
     return false;
 }
 

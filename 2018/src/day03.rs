@@ -1,7 +1,6 @@
 use regex::Regex;
 use std::collections::HashSet;
 
-
 #[test]
 fn day03_1_test() {
     const INPUT: &str = include_str!("../input/03_test.txt");
@@ -37,7 +36,8 @@ struct Rect {
 fn read_contents(contents: &str) -> Vec<Rect> {
     let mut v: Vec<Rect> = Vec::new();
     for line in contents.lines() {
-        let re = Regex::new(r"(?x)
+        let re = Regex::new(
+            r"(?x)
 \#(?P<id>\d+)
 \s@\s
 (?P<x>\d+)
@@ -47,7 +47,9 @@ fn read_contents(contents: &str) -> Vec<Rect> {
 (?P<w>\d+)
 x
 (?P<h>\d+)
-").unwrap();
+",
+        )
+        .unwrap();
 
         let caps = re.captures(line).unwrap();
 
@@ -56,7 +58,7 @@ x
             x: caps["x"].parse::<i32>().unwrap(),
             y: caps["y"].parse::<i32>().unwrap(),
             w: caps["w"].parse::<i32>().unwrap(),
-            h: caps["h"].parse::<i32>().unwrap()
+            h: caps["h"].parse::<i32>().unwrap(),
         };
 
         v.push(rect);
@@ -67,7 +69,7 @@ x
 
 fn day03_1(contents: &str, h: i32, w: i32) -> Vec<i32> {
     let changes: Vec<Rect> = read_contents(&contents);
-    let mut area: Vec<i32> = (0..(h*w)).map(|_| 0).collect();
+    let mut area: Vec<i32> = (0..(h * w)).map(|_| 0).collect();
     let mut result: i32 = 0;
     let mut no_overlaps: HashSet<i32> = HashSet::new();
     let mut overlaps: HashSet<i32> = HashSet::new();

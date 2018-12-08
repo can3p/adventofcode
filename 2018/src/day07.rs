@@ -5,7 +5,7 @@ use std::collections::HashSet;
 #[test]
 fn day07_1_test_input() {
     const INPUT: &str = "Step F must be finished before step E can begin.\nStep B must be finished before step E can begin.";
-    assert_eq!(read_contents(INPUT),[['F','E'],['B','E']]);
+    assert_eq!(read_contents(INPUT), [['F', 'E'], ['B', 'E']]);
 }
 
 #[test]
@@ -52,15 +52,15 @@ fn day07_2_input() {
     assert_eq!(day07_2(&INPUT, 60, 5), 15);
 }
 
-fn day07_2(input: &str, initial: i32, workers_num:i32) -> i32 {
+fn day07_2(input: &str, initial: i32, workers_num: i32) -> i32 {
     let mut elapsed_time = 0;
     let mut time_to_work: Vec<i32> = (0..workers_num).map(|_| 0).collect();
     let mut chars_in_progress: HashMap<usize, char> = HashMap::new();
 
     let inp_vec = read_contents(input);
 
-    let mut straight: HashMap<char,Vec<char>> = HashMap::new();
-    let mut reverse: HashMap<char,Vec<char>> = HashMap::new();
+    let mut straight: HashMap<char, Vec<char>> = HashMap::new();
+    let mut reverse: HashMap<char, Vec<char>> = HashMap::new();
 
     for p in inp_vec.iter() {
         let mut svec: Vec<char>;
@@ -101,19 +101,26 @@ fn day07_2(input: &str, initial: i32, workers_num:i32) -> i32 {
     to_process.sort_unstable_by(|a, b| a.cmp(&b));
     to_process.reverse();
 
-    while expanded.len() > 0
-        || chars_in_progress.keys().len() > 0
-        || to_process.len() > 0 {
-
+    while expanded.len() > 0 || chars_in_progress.keys().len() > 0 || to_process.len() > 0 {
         if chars_in_progress.keys().len() == time_to_work.len()
-        || (chars_in_progress.keys().len() > 0 && expanded.len() == 0) {
+            || (chars_in_progress.keys().len() > 0 && expanded.len() == 0)
+        {
             let mi = min_index(&time_to_work, false);
             let t = time_to_work[mi].clone();
-            println!("mi = {:?}, time_to_work = {:?}, chars_in_progress = {:?}", mi, time_to_work, chars_in_progress);
+            println!(
+                "mi = {:?}, time_to_work = {:?}, chars_in_progress = {:?}",
+                mi, time_to_work, chars_in_progress
+            );
             elapsed_time += t;
             for i in 0..workers_num {
                 let u = i as usize;
-                println!("update worker {:?}, {:?} - {:?} = {:?}", i, time_to_work[u], t, time_to_work[u] - t);
+                println!(
+                    "update worker {:?}, {:?} - {:?} = {:?}",
+                    i,
+                    time_to_work[u],
+                    t,
+                    time_to_work[u] - t
+                );
                 if time_to_work[u] > 0 {
                     time_to_work[u] = time_to_work[u] - t;
 
@@ -126,7 +133,10 @@ fn day07_2(input: &str, initial: i32, workers_num:i32) -> i32 {
                     }
                 }
             }
-            println!("mi = {:?}, time_to_work = {:?}, chars_in_progress = {:?}", mi, time_to_work, chars_in_progress);
+            println!(
+                "mi = {:?}, time_to_work = {:?}, chars_in_progress = {:?}",
+                mi, time_to_work, chars_in_progress
+            );
             expanded.sort_unstable_by(|a, b| a.cmp(&b));
             expanded.reverse();
             continue;
@@ -140,7 +150,8 @@ fn day07_2(input: &str, initial: i32, workers_num:i32) -> i32 {
                 let unfiltered_deps = straight.get(&c).unwrap().clone();
                 for dep in unfiltered_deps.iter() {
                     if !expanded_set.contains(&dep)
-                        && chars_in_progress.values().position(|d| d == dep).is_none() {
+                        && chars_in_progress.values().position(|d| d == dep).is_none()
+                    {
                         deps.push(dep.clone());
                     }
                 }
@@ -157,10 +168,16 @@ fn day07_2(input: &str, initial: i32, workers_num:i32) -> i32 {
                     let rev_deps = reverse.get(&dep).unwrap();
                     //println!("reverse deps for {:?} are {:?} and expanded_set is {:?}", dep, rev_deps, expanded_set);
 
-                    if rev_deps.iter().position(|rd| expanded_set.contains(&rd)
-                                                || chars_in_progress.values().position(|d| d == dep).is_some()
-                                                || straight.get(&rd).is_some()
-                                                || deps.iter().position(|dd| rd == dd).is_some()).is_none() {
+                    if rev_deps
+                        .iter()
+                        .position(|rd| {
+                            expanded_set.contains(&rd)
+                                || chars_in_progress.values().position(|d| d == dep).is_some()
+                                || straight.get(&rd).is_some()
+                                || deps.iter().position(|dd| rd == dd).is_some()
+                        })
+                        .is_none()
+                    {
                         to_process.push(dep.clone());
                     }
                 }
@@ -178,10 +195,9 @@ fn day07_2(input: &str, initial: i32, workers_num:i32) -> i32 {
         to_process.reverse();
         println!("to_process {:?}", to_process);
 
-        while chars_in_progress.keys().len() < time_to_work.len()
-          && to_process.len() > 0 {
+        while chars_in_progress.keys().len() < time_to_work.len() && to_process.len() > 0 {
             let mi = min_index(&time_to_work, true);
-            let c:char = to_process.pop().unwrap();
+            let c: char = to_process.pop().unwrap();
             time_to_work[mi] += compute_delay(c, initial);
             chars_in_progress.insert(mi, c);
         }
@@ -190,7 +206,6 @@ fn day07_2(input: &str, initial: i32, workers_num:i32) -> i32 {
                  elapsed_time, expanded, to_process, chars_in_progress, time_to_work);
 
         //return elapsed_time;
-
     }
 
     return elapsed_time;
@@ -221,8 +236,8 @@ fn compute_delay(c: char, initial: i32) -> i32 {
 fn day07_1(input: &str) -> String {
     let inp_vec = read_contents(input);
 
-    let mut straight: HashMap<char,Vec<char>> = HashMap::new();
-    let mut reverse: HashMap<char,Vec<char>> = HashMap::new();
+    let mut straight: HashMap<char, Vec<char>> = HashMap::new();
+    let mut reverse: HashMap<char, Vec<char>> = HashMap::new();
 
     for p in inp_vec.iter() {
         let mut svec: Vec<char>;
@@ -285,9 +300,15 @@ fn day07_1(input: &str) -> String {
                 let rev_deps = reverse.get(&dep).unwrap();
                 //println!("reverse deps for {:?} are {:?} and expanded_set is {:?}", dep, rev_deps, expanded_set);
 
-                if rev_deps.iter().position(|rd| expanded_set.contains(&rd)
-                                            || straight.get(&rd).is_some()
-                                            || deps.iter().position(|dd| rd == dd).is_some()).is_none() {
+                if rev_deps
+                    .iter()
+                    .position(|rd| {
+                        expanded_set.contains(&rd)
+                            || straight.get(&rd).is_some()
+                            || deps.iter().position(|dd| rd == dd).is_some()
+                    })
+                    .is_none()
+                {
                     expanded.push(dep.clone());
                     expanded_set.insert(dep.clone());
                 }
@@ -312,20 +333,22 @@ fn day07_1(input: &str) -> String {
 fn read_contents(contents: &str) -> Vec<Vec<char>> {
     let mut result: Vec<Vec<char>> = Vec::new();
 
-    let re = Regex::new(r"(?x)
+    let re = Regex::new(
+        r"(?x)
 Step\s
 (?P<aa>[A-Z])
 \smust\sbe\sfinished\sbefore\sstep\s
 (?P<bb>[A-Z])
-").unwrap();
+",
+    )
+    .unwrap();
 
     for line in contents.lines() {
-
         let caps = re.captures(line).unwrap();
 
         let ret = vec![
             caps["aa"].chars().next().unwrap(),
-            caps["bb"].chars().next().unwrap()
+            caps["bb"].chars().next().unwrap(),
         ];
 
         result.push(ret);

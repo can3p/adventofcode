@@ -2,7 +2,7 @@
 fn day08_1_test_sort() {
     const INPUT: &str = "1 2 3 4";
 
-    assert_eq!(read_contents(INPUT), [1,2,3,4]);
+    assert_eq!(read_contents(INPUT), [1, 2, 3, 4]);
 }
 
 #[test]
@@ -39,7 +39,7 @@ fn day08_2_input() {
 
 struct Node {
     children: Vec<Node>,
-    metadata: Vec<i32>
+    metadata: Vec<i32>,
 }
 
 fn day08_1(input: &str) -> i32 {
@@ -59,15 +59,18 @@ fn calc_node_value(node: &Node) -> i32 {
         return node.metadata.iter().sum::<i32>();
     }
 
-    return node.metadata.iter()
-                        .map(|&val| {
-                            if val == 0 || (val as usize) > node.children.len() {
-                                return 0;
-                            }
+    return node
+        .metadata
+        .iter()
+        .map(|&val| {
+            if val == 0 || (val as usize) > node.children.len() {
+                return 0;
+            }
 
-                            // we can care to cache value there but we don't
-                            return calc_node_value(&node.children[(val - 1) as usize]);
-                        }).sum::<i32>();
+            // we can care to cache value there but we don't
+            return calc_node_value(&node.children[(val - 1) as usize]);
+        })
+        .sum::<i32>();
 }
 
 fn sum_metadata(node: &Node) -> i32 {
@@ -97,9 +100,9 @@ fn create_node(seq: &Vec<i32>, cur_idx: &mut usize) -> Node {
         *cur_idx += 1;
     }
 
-    let node =  Node {
+    let node = Node {
         children: children,
-        metadata: metadata
+        metadata: metadata,
     };
 
     return node;
@@ -108,9 +111,10 @@ fn create_node(seq: &Vec<i32>, cur_idx: &mut usize) -> Node {
 fn read_contents(contents: &str) -> Vec<i32> {
     let input = contents.lines().next().unwrap();
 
-    let vec = input.split_whitespace()
-                    .map(|x| x.parse::<i32>().unwrap())
-                    .collect();
+    let vec = input
+        .split_whitespace()
+        .map(|x| x.parse::<i32>().unwrap())
+        .collect();
 
     return vec;
 }

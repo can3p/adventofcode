@@ -61,7 +61,7 @@ fn find_seqs(s: &String) -> Vec<i32> {
     for c in s.chars() {
         let count = match counts.get(&c) {
             Some(count) => count + 1,
-            None => 1
+            None => 1,
         };
 
         counts.insert(c, count);
@@ -80,14 +80,13 @@ fn find_seqs(s: &String) -> Vec<i32> {
     return res;
 }
 
-
 fn find_similariry(str1: &String, str2: &String) -> Option<String> {
     let mut err_cnt = 0;
     let mut res = String::new();
 
     for idx in 0..str1.len() {
-        let sub1: String = str1.get(idx..(idx+1)).unwrap().to_string();
-        let sub2: String = str2.get(idx..(idx+1)).unwrap().to_string();
+        let sub1: String = str1.get(idx..(idx + 1)).unwrap().to_string();
+        let sub2: String = str2.get(idx..(idx + 1)).unwrap().to_string();
         if sub1 != sub2 {
             err_cnt += 1;
             if err_cnt > 1 {

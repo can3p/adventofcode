@@ -5,8 +5,13 @@ use std::collections::HashMap;
 fn day04_1_test_sort() {
     const INPUT: &str = "[1518-11-05 00:55] wakes up\n[1518-11-01 00:30] falls asleep";
 
-    assert_eq!(read_contents(INPUT),
-               ["[1518-11-01 00:30] falls asleep","[1518-11-05 00:55] wakes up"]);
+    assert_eq!(
+        read_contents(INPUT),
+        [
+            "[1518-11-01 00:30] falls asleep",
+            "[1518-11-05 00:55] wakes up"
+        ]
+    );
 }
 
 #[test]
@@ -38,9 +43,11 @@ fn day04_1(input: &str) -> i32 {
     let mut counts = Vec::new();
 
     for key in parsed.keys() {
-        let counted = parsed.get(key).unwrap()
-                        .iter()
-                        .fold(0i32, |acc, v| acc + v[1] - v[0] + 1);
+        let counted = parsed
+            .get(key)
+            .unwrap()
+            .iter()
+            .fold(0i32, |acc, v| acc + v[1] - v[0] + 1);
 
         let mut v = Vec::new();
         v.push(*key);
@@ -115,13 +122,16 @@ fn find_max_minute(strips: Vec<Vec<i32>>) -> Vec<i32> {
 }
 
 fn parse_new_guard(line: &str) -> Option<Vec<i32>> {
-    let re = Regex::new(r"(?x)
+    let re = Regex::new(
+        r"(?x)
 (?P<hh>\d+)
 :
 (?P<mm>\d+)
 \]\sGuard\s\#
 (?P<num>\d+)
-").unwrap();
+",
+    )
+    .unwrap();
 
     let caps = re.captures(line);
 
@@ -131,7 +141,7 @@ fn parse_new_guard(line: &str) -> Option<Vec<i32>> {
         let ret = vec![
             unwrapped["hh"].parse::<i32>().unwrap(),
             unwrapped["mm"].parse::<i32>().unwrap(),
-            unwrapped["num"].parse::<i32>().unwrap()
+            unwrapped["num"].parse::<i32>().unwrap(),
         ];
 
         return Some(ret);
@@ -141,12 +151,15 @@ fn parse_new_guard(line: &str) -> Option<Vec<i32>> {
 }
 
 fn parse_wakes_up(line: &str) -> Option<Vec<i32>> {
-    let re = Regex::new(r"(?x)
+    let re = Regex::new(
+        r"(?x)
 (?P<hh>\d+)
 :
 (?P<mm>\d+)
 \]\swakes
-").unwrap();
+",
+    )
+    .unwrap();
 
     let caps = re.captures(line);
 
@@ -155,7 +168,7 @@ fn parse_wakes_up(line: &str) -> Option<Vec<i32>> {
 
         let ret = vec![
             unwrapped["hh"].parse::<i32>().unwrap(),
-            unwrapped["mm"].parse::<i32>().unwrap()
+            unwrapped["mm"].parse::<i32>().unwrap(),
         ];
 
         return Some(ret);
@@ -165,12 +178,15 @@ fn parse_wakes_up(line: &str) -> Option<Vec<i32>> {
 }
 
 fn parse_falls_asleep(line: &str) -> Option<Vec<i32>> {
-    let re = Regex::new(r"(?x)
+    let re = Regex::new(
+        r"(?x)
 (?P<hh>\d+)
 :
 (?P<mm>\d+)
 \]\sfalls
-").unwrap();
+",
+    )
+    .unwrap();
 
     let caps = re.captures(line);
 
@@ -179,7 +195,7 @@ fn parse_falls_asleep(line: &str) -> Option<Vec<i32>> {
 
         let ret = vec![
             unwrapped["hh"].parse::<i32>().unwrap(),
-            unwrapped["mm"].parse::<i32>().unwrap()
+            unwrapped["mm"].parse::<i32>().unwrap(),
         ];
 
         return Some(ret);
@@ -188,8 +204,8 @@ fn parse_falls_asleep(line: &str) -> Option<Vec<i32>> {
     return None;
 }
 
-fn parse_sequence(lines: Vec<String>) -> HashMap<i32,Vec<Vec<i32>>> {
-    let mut result: HashMap<i32,Vec<Vec<i32>>> = HashMap::new();
+fn parse_sequence(lines: Vec<String>) -> HashMap<i32, Vec<Vec<i32>>> {
+    let mut result: HashMap<i32, Vec<Vec<i32>>> = HashMap::new();
     let mut current_guard = 0;
     let mut current_vec: Vec<Vec<i32>> = Vec::new();
     let mut current_minute = 0;
@@ -203,7 +219,6 @@ fn parse_sequence(lines: Vec<String>) -> HashMap<i32,Vec<Vec<i32>>> {
             if current_guard > 0 {
                 result.insert(current_guard, current_vec);
             }
-
 
             let g = new_guard.unwrap();
             current_guard = g[2];
