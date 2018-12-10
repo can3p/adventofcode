@@ -1,10 +1,6 @@
-// this solution is damn slow. As was pointed in reddit thread,
-// the proper way would be to avoid inserting in the middle
-// of the list at all and keep track of prev/next indexes instead
-use std::collections::VecDeque;
-
 #[test]
 fn day09_1_test1() {
+    //let mut game = Game::new(9, 3);
     let mut game = Game::new(9, 25);
 
     assert_eq!(game.run(), 32);
@@ -31,9 +27,14 @@ fn day09_2_input() {
     assert_eq!(game.run(), 8317);
 }
 
+struct Marble {
+    value: i32,
+    next: usize,
+    prev: usize,
+}
+
 struct Game {
-    //marbles: Vec<i32>,
-    marbles: VecDeque<i32>,
+    marbles: Vec<Marble>,
     current_idx: usize,
     current_player: usize,
     next_marble: i32,
@@ -44,9 +45,12 @@ struct Game {
 impl Game {
     fn new(num_players: i32, max_marble: i32) -> Game {
         let scores: Vec<i64> = (0..num_players).map(|_| 0).collect();
-        let mut marbles: VecDeque<i32> = VecDeque::with_capacity(max_marble as usize);
-        marbles.push_back(0);
-        //marbles.push(0);
+        let mut marbles: Vec<Marble> = Vec::with_capacity((max_marble + 1) as usize);
+        marbles.push(Marble {
+            value: 0,
+            prev: 0,
+            next: 0,
+        });
 
         let game = Game {
             marbles: marbles,
@@ -67,10 +71,22 @@ impl Game {
     fn run(&mut self) -> i64 {
         while !self.is_finished() {
             self.next_move();
+            //self.print();
             //println!("current_idx = {:?}, marbles = {:?}", self.current_idx, self.marbles);
         }
 
         return self.scores.iter().max().unwrap().clone();
+    }
+
+    fn print(&self) {
+        let mut current_idx = self.marbles[0].next;
+        print!("{:?} ", self.marbles[0].value);
+
+        while current_idx != 0 {
+            print!("{:?} ", self.marbles[current_idx].value);
+            current_idx = self.marbles[current_idx].next;
+        }
+        println!("");
     }
 
     fn next_move(&mut self) {
@@ -81,7 +97,6 @@ impl Game {
         if marble.wrapping_rem(23) != 0 {
             self.move_current(1);
             self.insert_after(marble);
-            self.move_current(1);
         } else {
             self.add_to_score(marble);
             self.move_current(-7);
@@ -90,33 +105,44 @@ impl Game {
         }
     }
 
-    fn insert_after(&mut self, marble: i32) {
-        if self.current_idx == self.marbles.len() -1 {
-            self.marbles.push_back(marble);
-            //self.marbles.push(marble);
-        } else {
-            self.marbles.insert(self.current_idx + 1, marble);
-        }
+    fn insert_after(&mut self, value: i32) {
+        let idx: usize = self.marbles.len();
+        let next = self.marbles[self.current_idx].next;
+
+        let marble = Marble {
+            value: value,
+            next: next,
+            prev: self.current_idx,
+        };
+
+        self.marbles.push(marble);
+        self.marbles[self.current_idx].next = idx;
+        self.marbles[next].prev = idx;
+        self.current_idx = idx;
     }
 
     fn eject_current(&mut self) -> i32 {
-        let marble = self.marbles.remove(self.current_idx).unwrap();
-        if self.current_idx == self.marbles.len() {
-            self.current_idx = 0;
-        }
+        let next = self.marbles[self.current_idx].next;
+        let prev = self.marbles[self.current_idx].prev;
+        let value = self.marbles[self.current_idx].value;
 
-        return marble;
+        self.marbles[prev].next = self.marbles[self.current_idx].next;
+        self.marbles[next].prev = self.marbles[self.current_idx].prev;
+        self.current_idx = next;
+
+        return value;
     }
 
     fn move_current(&mut self, delta: i32) {
-        self.current_idx = self.current_idx + self.marbles.len();
         if delta < 0 {
-            self.current_idx -= delta.abs() as usize;
+            for _ in 0 .. delta.abs() {
+                self.current_idx = self.marbles[self.current_idx].prev;
+            }
         } else {
-            self.current_idx += delta as usize;
+            for _ in 0 .. delta.abs() {
+                self.current_idx = self.marbles[self.current_idx].next;
+            }
         }
-
-        self.current_idx = self.current_idx.wrapping_rem(self.marbles.len());
     }
 
     fn add_to_score(&mut self, marble: i32) {

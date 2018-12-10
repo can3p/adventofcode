@@ -17,3 +17,5 @@ Or, actually
   cases fixes were quite staightforward
 * Separation of concerns everywhere. E.g. any value that means an index of
   array or any other addressable datastructure has type `usize`, not `i32`
+* Day 9 - fantastic difference in speed with and without using Vec::insert.
+  It's even not 10x, more like 500x. Lesson - memory allocation matters.
