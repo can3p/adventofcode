@@ -5,3 +5,4 @@ authors = ["Dmitry Petrov <dpetroff@gmail.com>"]
 
 [dependencies]
 regex = "1"
+rayon = "1"
