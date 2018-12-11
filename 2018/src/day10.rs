@@ -1,5 +1,6 @@
 use regex::Regex;
-use std::collections::HashMap;
+
+#[allow(unused_imports)]
 use std::{
     fs::File,
     io::{BufWriter, Write},
@@ -58,7 +59,7 @@ fn test_day10_1_input() {
     let sol = day10_1(&mut stars, 11_000);
     let write_file = File::create("day10_1_out.txt").unwrap();
     let mut writer = BufWriter::new(&write_file);
-    write!(&mut writer, "{}", print_stars(&stars, 2));
+    let _res = write!(&mut writer, "{}", print_stars(&stars, 2));
     //println!("{}", print_stars(&stars, 2));
 
     assert_eq!(sol, Some(4));
