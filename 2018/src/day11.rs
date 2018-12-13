@@ -89,6 +89,7 @@ fn day11_2(sn: i32) -> (i32, i32, i32) {
 */
 
 
+// https://en.wikipedia.org/wiki/Summed-area_table is a fast way to do the calculation
 fn day11_1(sn: i32, size: usize) -> (i32, i32, i32) {
     let mut max = -1_000_000;
     let mut maxx = 0;

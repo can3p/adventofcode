@@ -2,6 +2,7 @@
 
 extern crate regex;
 extern crate rayon;
+extern crate bv;
 
 pub mod day01;
 pub mod day02;
@@ -13,3 +14,4 @@ pub mod day07;
 pub mod day09;
 pub mod day10;
 pub mod day11;
+pub mod day12;
